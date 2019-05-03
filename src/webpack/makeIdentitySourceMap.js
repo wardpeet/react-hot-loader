@@ -1,4 +1,4 @@
-const { SourceMapGenerator } = require('source-map')
+const { SourceMapGenerator } = require('./sourceMapWithPatch')
 
 function makeIdentitySourceMap(content, resourcePath) {
   const map = new SourceMapGenerator()
