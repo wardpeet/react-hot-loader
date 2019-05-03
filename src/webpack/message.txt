@@ -1,0 +1,8 @@
+This is a workaround against the fetch polyfill bug that causes source-map package to fallback to the wasm implementation. See https://github.com/mozilla/source-map/blob/0.7.3/lib/read-wasm.js#L1.
+
+This behaviour got fixed in version 0.8.0-beta but reading https://github.com/mozilla/source-map/issues/349#issuecomment-448117131 means this package doesn't want to update to 0.8.0-beta so this one is a simple workaround which got tested in gatsby and seems to work (https://github.com/gatsbyjs/gatsby/pull/13713).
+
+Basically this PR just removes global.fetch before loading source-map.
+
+
+chore(webpack): patch source-map wasm loader
