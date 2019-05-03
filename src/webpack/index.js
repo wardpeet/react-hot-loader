@@ -1,8 +1,17 @@
 'use strict';
 
+// start patch
+// remove fetch from the global namespace as it could been polyfilled in node world.
+// Source-map packages does a global.fetch check to fallback to browser wasm support.
+// This is fixed in version 0.8.0-beta but for now we need this patch.
+const originalFetch = global.fetch;
+delete global.fetch;
+const { SourceNode, SourceMapConsumer } = require('source-map');
+global.fetch = originalFetch;
+// end patch
+
 const fs = require('fs');
 const path = require('path');
-const {SourceNode, SourceMapConsumer} = require('source-map');
 const loaderUtils = require('loader-utils');
 const makeIdentitySourceMap = require('./makeIdentitySourceMap');
 const patch = require('./patch');
@@ -31,7 +40,7 @@ function transform(source, map) {
     this.cacheable();
   }
 
-  const options = Object.assign({withPatch: true}, loaderUtils.getOptions(this));
+  const options = Object.assign({ withPatch: true }, loaderUtils.getOptions(this));
   if (options.withPatch) {
     source = patch(source);
   }
@@ -46,8 +55,8 @@ function transform(source, map) {
       path.join(__dirname, 'webpackTagCommonJSExports.js'),
       'utf8'
     )
-    // Babel inserts these.
-    // Ideally we'd opt out for one file but this is simpler.
+      // Babel inserts these.
+      // Ideally we'd opt out for one file but this is simpler.
       .replace(/['"]use strict['"];/, '')
       // eslint comments don't need to end up in the output
       .replace(/\/\/ eslint-disable-line .*\n/g, '\n')
